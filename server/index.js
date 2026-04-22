@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 import dotenv from 'dotenv'
-import router from './routes/auth.js';
+import authRouter from './routes/auth.js';
+import taskRouter from './routes/tasks.js';
 
 dotenv.config()
 const app = express();
@@ -19,7 +20,8 @@ app.use(cors({
   credentials: true
 }));
 
-app.use('/auth', router);
+app.use('/auth', authRouter);
+app.use('/tasks', taskRouter);
 
 
 app.get('/', (req, res) => {
@@ -40,4 +42,3 @@ mongoose.connect(CONNECTION_URL)
   .catch((error) => console.log("❌ MongoDB connection error:", error.message));
 
 //mongodb+srv://admin:
-
