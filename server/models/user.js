@@ -28,9 +28,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please provide a password'],
         minlength: [6, 'Password must be at least 6 characters']
     },
-    id:{
-        type:String
-    },
+    
 }, { 
     timestamps: true 
 });
@@ -43,22 +41,11 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 
 
 
-userSchema.pre('save', async function(next) {
-    // Only hash if password is modified
-    if (!this.isModified('password')) return next();
-    
-    // Check if password exists
-    if (!this.password) {
-        return next(new Error('Password is required'));
-    }
+userSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
 
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 const User = mongoose.model('User', userSchema);

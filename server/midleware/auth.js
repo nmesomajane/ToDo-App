@@ -1,29 +1,30 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/user.model.js';
-import { JWT_SECRET } from "./env";
+import User from '../models/user.js';
 
+const authorised = async (req, res, next) => {
+  try {
+    
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'Not authorized, no token' });
+    }
 
-// Middleware to protect routes
-const authorised = async(req, res, next) => {
-    try {
-      let token;
-      if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        token = req.headers.authorization.split(' ')[1];
-      }
-      //check if token exist
-      if (!token) {
-        return res.status(401).json({ success: false, message: 'Not authorized, no token' });
-      }
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await User.findById(decoded.userId).select('-password');
-        if (!user) {
-            return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
-        }
-        req.user = user;
-    } catch (error) {
-        res.status(401).json({ success: false, message: 'Not authorized' });
-    }   
-    next();
+    const token = authHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ fixed
+
+    const user = await User.findById(decoded.userId).select('-password');
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+
+    req.user = user;
+    next(); 
+
+  } catch (error) {
+   
+    return res.status(401).json({ success: false, message: 'Not authorized, invalid token' });
+  }
 };
 
 export default authorised;

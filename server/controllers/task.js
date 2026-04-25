@@ -5,7 +5,7 @@ export const getTasks = async (req, res, next) => {
   try {
     const { status, sort } = req.query;
 
-    // Build filter — always scope to the logged-in user
+   
     const filter = { userId: req.user._id };
 
     if (status && ["pending", "completed"].includes(status)) {

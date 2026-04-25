@@ -36,9 +36,7 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-// ─────────────────────────────────────────────
-// CREATE TASK
-// ─────────────────────────────────────────────
+
 describe("POST /api/tasks", () => {
   it("should create a task for authenticated user", async () => {
     const res = await request(app)
@@ -83,9 +81,7 @@ describe("POST /api/tasks", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// GET ALL TASKS
-// ─────────────────────────────────────────────
+
 describe("GET /api/tasks", () => {
   it("should return all non-deleted tasks for the user", async () => {
     const res = await request(app)
@@ -123,9 +119,6 @@ describe("GET /api/tasks", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// GET SINGLE TASK
-// ─────────────────────────────────────────────
 describe("GET /api/tasks/:id", () => {
   it("should return a single task by ID", async () => {
     const res = await request(app)
@@ -154,9 +147,7 @@ describe("GET /api/tasks/:id", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// UPDATE TASK
-// ─────────────────────────────────────────────
+
 describe("PATCH /api/tasks/:id", () => {
   it("should mark a task as completed", async () => {
     const res = await request(app)
@@ -204,9 +195,7 @@ describe("PATCH /api/tasks/:id", () => {
   });
 });
 
-// ─────────────────────────────────────────────
-// DELETE TASK (soft delete)
-// ─────────────────────────────────────────────
+
 describe("DELETE /api/tasks/:id", () => {
   it("should soft-delete a task (set status to deleted)", async () => {
     const res = await request(app)
