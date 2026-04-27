@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 const TaskForm = ({ onAdd }) => {
-  const [title, setTitle]             = useState('');
-  const [description, setDescription] = useState('');
-  const [loading, setLoading]         = useState(false);
-  const [expanded, setExpanded]       = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,8 +12,8 @@ const TaskForm = ({ onAdd }) => {
     setLoading(true);
     try {
       await onAdd({ title: title.trim(), description: description.trim() });
-      setTitle('');
-      setDescription('');
+      setTitle("");
+      setDescription("");
       setExpanded(false);
     } finally {
       setLoading(false);
@@ -21,10 +21,13 @@ const TaskForm = ({ onAdd }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-zinc-900 border border-zinc-800 rounded-xl p-4"
+    >
       <div className="flex gap-3">
         {/* Plus icon */}
-        <div className="mt-2.5 w-5 h-5 rounded-full border-2 border-dashed border-zinc-600 flex-shrink-0" />
+        <div className="mt-2.5 w-5 h-5 rounded-full border-2 border-dashed border-zinc-600 shrink-0" />
 
         <div className="flex-1 space-y-2">
           <input
@@ -58,7 +61,11 @@ const TaskForm = ({ onAdd }) => {
         <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800">
           <button
             type="button"
-            onClick={() => { setExpanded(false); setTitle(''); setDescription(''); }}
+            onClick={() => {
+              setExpanded(false);
+              setTitle("");
+              setDescription("");
+            }}
             className="px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition"
           >
             Cancel
@@ -70,7 +77,7 @@ const TaskForm = ({ onAdd }) => {
                        disabled:cursor-not-allowed text-zinc-900 text-xs font-semibold
                        rounded-lg transition"
           >
-            {loading ? 'Adding...' : 'Add Task'}
+            {loading ? "Adding..." : "Add Task"}
           </button>
         </div>
       )}
