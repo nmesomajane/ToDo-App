@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+
 import axiosInstance from '../api/axiosInstance';
 import TaskCard from '../components/TaskCard';
 import TaskForm from '../components/TaskForm';
 import FilterBar from '../components/FilterBar';
+import useAuth from '../context/useAuth';
 
 const Dashboard = () => {
   const {  logout }    = useAuth();
