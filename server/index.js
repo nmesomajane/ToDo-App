@@ -16,7 +16,7 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 app.use(cors({
-  origin: [ 'http://localhost:5173'],
+  origin: [ 'http://localhost:5173', 'https://todo-app-4d5k.onrender.com' ,],
   credentials: true
 }));
 
