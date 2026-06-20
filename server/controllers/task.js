@@ -55,11 +55,12 @@ export const getTaskById = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, dueDate } = req.body;
 
     const task = await Task.create({
       title,
       description,
+      dueDate,
       userId: req.user._id,
       status: "pending",
     });
@@ -76,13 +77,14 @@ export const createTask = async (req, res, next) => {
 
 export const updateTask = async (req, res, next) => {
   try {
-    const { title, description, status } = req.body;
+    const { title, description, status, dueDate } = req.body;
 
     // Only allow these fields to be updated
     const updates = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
     if (status !== undefined) updates.status = status;
+    if (dueDate !== undefined) updates.dueDate = dueDate;
 
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },

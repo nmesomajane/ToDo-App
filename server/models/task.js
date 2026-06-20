@@ -16,6 +16,12 @@ const taskSchema = new mongoose.Schema(
       maxlength: [1000, "Description cannot exceed 1000 characters"],
       default: "",
     },
+    dueDate: {
+      type: Date,
+      default: null,
+      required: true,
+    },
+
     status: {
       type: String,
       enum: {

@@ -91,7 +91,7 @@ export const signUp = async (req, res, next) => {
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    console.log("📝 Signup attempt:", { email, password });
+    console.log(" Signup attempt:", { email, password });
 
     const user = await User.findOne({ email });
     if (!user) {
