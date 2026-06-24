@@ -3,7 +3,8 @@ import { useState } from "react";
 const TaskForm = ({ onAdd }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [dueDate, setDueDate] = useState(""); // New state for due date
+const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -11,7 +12,11 @@ const TaskForm = ({ onAdd }) => {
     if (!title.trim()) return;
     setLoading(true);
     try {
-      await onAdd({ title: title.trim(), description: description.trim() });
+      await onAdd({
+        title: title.trim(),
+        description: description.trim(),
+        dueDate: dueDate.trim(),
+      });
       setTitle("");
       setDescription("");
       setExpanded(false);
@@ -25,62 +30,103 @@ const TaskForm = ({ onAdd }) => {
       onSubmit={handleSubmit}
       className="bg-zinc-900 border border-zinc-800 rounded-xl p-4"
     >
-      <div className="flex gap-3">
-        {/* Plus icon */}
-        <div className="mt-2.5 w-5 h-5 rounded-full border-2 border-dashed border-zinc-600 shrink-0" />
+      {/* Collapsed — always visible */}
+      {/* Task Input */}
+  <div className="space-y-3">
 
-        <div className="flex-1 space-y-2">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onFocus={() => setExpanded(true)}
-            placeholder="Add a new task..."
-            maxLength={200}
-            className="w-full bg-transparent text-white placeholder-zinc-600 text-sm
-                       focus:outline-none"
-          />
+  {/* Task title */}
+  <div className="flex items-center gap-3">
+    <div className="mt-1 w-[18px] h-[18px] rounded-full border-2 border-dashed border-zinc-600 shrink-0" />
 
-          {/* Description only shows when focused */}
-          {expanded && (
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add a description (optional)"
-              rows={2}
-              maxLength={1000}
-              className="w-full bg-transparent text-zinc-400 placeholder-zinc-700 text-xs
-                         focus:outline-none resize-none"
-            />
-          )}
-        </div>
+    <input
+      type="text"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      onFocus={() => setExpanded(true)}
+      placeholder="Task title *"
+      maxLength={200}
+      required
+      className="flex-1 bg-transparent text-sm text-white 
+                 placeholder-zinc-600 focus:outline-none"
+    />
+  </div>
+
+
+  {expanded && (
+    <>
+      {/* Description */}
+      <textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Add description (optional)"
+        rows={3}
+        maxLength={1000}
+        className="w-full bg-transparent text-sm text-zinc-400
+                   placeholder-zinc-700 focus:outline-none 
+                   resize-none pl-7"
+      />
+
+
+      {/* Due date */}
+      <div className="flex items-center gap-3 pl-7">
+
+        <label className="text-xs text-zinc-500">
+          Due date *
+        </label>
+
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          min={new Date().toISOString().split("T")[0]}
+          required
+          className="bg-zinc-900 border border-zinc-700 
+                     rounded-md px-3 py-1 text-xs 
+                     text-zinc-300 focus:outline-none"
+        />
+
       </div>
 
-      {/* Action buttons — only show when expanded */}
-      {expanded && (
-        <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-zinc-800">
-          <button
-            type="button"
-            onClick={() => {
-              setExpanded(false);
-              setTitle("");
-              setDescription("");
-            }}
-            className="px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={!title.trim() || loading}
-            className="px-4 py-1.5 bg-amber-400 hover:bg-amber-300 disabled:opacity-40
-                       disabled:cursor-not-allowed text-zinc-900 text-xs font-semibold
-                       rounded-lg transition"
-          >
-            {loading ? "Adding..." : "Add Task"}
-          </button>
-        </div>
-      )}
+
+      <hr className="border-zinc-800 my-3" />
+
+
+      {/* Actions */}
+      <div className="flex justify-end gap-2">
+
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded(false);
+            setTitle("");
+            setDescription("");
+            setDueDate("");
+          }}
+          className="px-3 py-1 text-xs text-zinc-400
+                     border border-zinc-700 rounded-md
+                     hover:bg-zinc-800"
+        >
+          Cancel
+        </button>
+
+
+        <button
+          type="submit"
+          disabled={!title || !dueDate}
+          className="px-3 py-1 text-xs font-medium
+                     bg-blue-600 text-white rounded-md
+                     hover:bg-blue-500
+                     disabled:opacity-50"
+        >
+          Add task
+        </button>
+
+      </div>
+
+    </>
+  )}
+
+</div>
     </form>
   );
 };

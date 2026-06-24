@@ -38,8 +38,8 @@ const Dashboard = () => {
 }, []);
 
   //Add task 
-  const handleAdd = async ({ title, description }) => {
-    const res = await axiosInstance.post('/api/tasks', { title, description });
+  const handleAdd = async ({ title, description,dueDate }) => {
+    const res = await axiosInstance.post('/api/tasks', { title, description, dueDate });
     setTasks((prev) => [res.data.task, ...prev]);
   };
 
