@@ -1,12 +1,14 @@
 import Task from "../models/task.js";
 import logger from "../utils/logger.js";
+import User from '../models/user.js'
+import { sendOverdueEmail, sendCompletedEmail } from '../utils/mailer.js';
 
 export const getTasks = async (req, res, next) => {
   try {
     const { status, sort } = req.query;
 
    
-    const filter = { userId: req.user._id };
+    const filter = { user: req.user._id };
 
     if (status && ["pending", "completed"].includes(status)) {
       filter.status = status;
@@ -53,55 +55,93 @@ export const getTaskById = async (req, res, next) => {
 };
 
 
-export const createTask = async (req, res, next) => {
+export const createTask = async (req, res) => {
   try {
     const { title, description, dueDate } = req.body;
-
+ 
+    if (!title?.trim()) {
+      return res.status(400).json({ message: 'Title is required' });
+    }
+    if (!dueDate) {
+      return res.status(400).json({ message: 'Due date is required' });
+    }
+ 
+    const due = new Date(dueDate);
+    if (isNaN(due.getTime())) {
+      return res.status(400).json({ message: 'Invalid due date' });
+    }
+ 
+    // Determine initial status immediately — no need to wait for the cron.
+    const status = due < new Date() ? 'overdue' : 'pending';
+ 
     const task = await Task.create({
-      title,
-      description,
-      dueDate,
-      userId: req.user._id,
-      status: "pending",
+      title: title.trim(),
+      description: description?.trim() || '',
+      dueDate: due,
+      status,
+      user: req.user._id,
     });
-
-    logger.info(`User ${req.user._id} created task ${task._id}`);
-
-    res.status(201).json({ success: true, task });
-  } catch (error) {
-    logger.error(`createTask error: ${error.message}`);
-    next(error);
+ 
+    logger.info(`Task created: ${task._id} by user ${req.user._id}`);
+    res.status(201).json({ task });
+  } catch (err) {
+    logger.error('createTask error:', err);
+    res.status(500).json({ message: 'Failed to create task' });
   }
 };
 
 
-export const updateTask = async (req, res, next) => {
+
+export const updateTask = async (req, res) => {
   try {
-    const { title, description, status, dueDate } = req.body;
+    const task = await Task.findOne({ _id: req.params.id, user: req.user._id });
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
-    // Only allow these fields to be updated
-    const updates = {};
-    if (title !== undefined) updates.title = title;
-    if (description !== undefined) updates.description = description;
-    if (status !== undefined) updates.status = status;
-    if (dueDate !== undefined) updates.dueDate = dueDate;
+    const { title, description, dueDate, completed } = req.body;
 
-    const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user._id },
-      updates,
-      { new: true, runValidators: true } // return updated doc + run schema validation
-    );
+    if (title !== undefined) task.title = title.trim();
+    if (description !== undefined) task.description = description.trim();
+    if (dueDate !== undefined) task.dueDate = new Date(dueDate);
 
-    if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+    const wasCompleted = task.completed;
+    if (completed !== undefined) task.completed = completed;
+
+    if (task.completed) {
+      task.status = 'completed';
+    } else if (task.dueDate && new Date(task.dueDate) < new Date()) {
+      task.status = 'overdue';
+    } else {
+      task.status = 'pending';
     }
 
-    logger.info(`User ${req.user._id} updated task ${task._id} → status: ${task.status}`);
+    await task.save();
 
-    res.status(200).json({ success: true, task });
-  } catch (error) {
-    logger.error(`updateTask error: ${error.message}`);
-    next(error);
+    // Send response FIRST before doing async notifications
+    res.json({ task });
+        // THEN fire notifications after response is sent
+   if (!wasCompleted && task.completed) {
+  try {
+    const user = await User.findById(req.user._id).select('email');
+    console.log('User email:', user?.email);
+
+    if (user?.email) {
+      sendToUser(String(user._id), {
+        type: 'TASK_COMPLETED',
+        taskId: task._id,
+        title: task.title,
+        message: `"${task.title}" marked as complete. Nice work!`,
+      });
+
+      await sendCompletedEmail(user.email, task.title);
+      console.log('Completion email sent to:', user.email);
+    }
+  } catch (notifErr) {
+    logger.error('Notification error:', notifErr.message); // won't send another response
+  }
+}
+  } catch (err) {
+    logger.error('updateTask error:', err);
+    res.status(500).json({ message: 'Failed to update task' });
   }
 };
 
@@ -109,7 +149,7 @@ export const updateTask = async (req, res, next) => {
 export const deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user._id },
+      { _id: req.params.id, user: req.user._id },
       { status: "deleted" },
       { new: true }
     );

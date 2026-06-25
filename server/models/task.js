@@ -23,18 +23,18 @@ const taskSchema = new mongoose.Schema(
     },
    overdue: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     status: {
       type: String,
       enum: {
-        values: ["pending", "completed", "deleted"],
+        values: ["pending", "completed", "deleted", "overdue"],
         message: "Status must be pending, completed, or deleted",
       },
       default: "pending",
     },
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Task must belong to a user"],

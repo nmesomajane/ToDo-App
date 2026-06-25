@@ -4,6 +4,9 @@ import useAuth from '../context/useAuth';
 const ProtectedRoute = ({ children }) => {
   const { token, loading } = useAuth();
 
+  // Add this temporarily
+  console.log('ProtectedRoute check — token:', token, '| loading:', loading);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950">

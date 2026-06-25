@@ -57,8 +57,6 @@ const queryRules = [
 
 
 
-
-
 router.get("/",    authorised, queryRules,      validate, getTasks);
 router.post("/",   authorised, createTaskRules, validate, createTask);
 router.get("/:id", authorised, mongoIdRule,     validate, getTaskById);

@@ -71,7 +71,7 @@ const TaskCard = ({ task, onStatusChange, onDelete }) => {
         </div>
 
         {/* Right — status badge + delete */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <span
             className={`text-xs px-2 py-0.5 rounded-full border font-medium ${STATUS_STYLES[task.status]}`}
           >

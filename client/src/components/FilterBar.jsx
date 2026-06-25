@@ -1,41 +1,30 @@
+
+
 const FILTERS = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "pending" },
-  { label: "Completed", value: "completed" },
+  { value: 'all',       label: 'All'       },
+  { value: 'pending',   label: 'Pending'   },
+  { value: 'overdue',   label: 'Overdue'   },
+  { value: 'completed', label: 'Completed' },
 ];
 
-const FilterBar = ({ active, onChange, counts }) => {
+export default function FilterBar({ filter, onChange }) {
   return (
-    <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-800 rounded-xl p-1">
-      {FILTERS.map(({ label, value }) => (
+    <div className="flex gap-1 bg-zinc-900 border border-zinc-800 rounded-xl p-1">
+      {FILTERS.map(({ value, label }) => (
         <button
           key={value}
           onClick={() => onChange(value)}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg
-                      text-xs font-medium transition-all duration-200
-                      ${
-                        active === value
-                          ? "bg-amber-400 text-zinc-900"
-                          : "text-zinc-400 hover:text-white"
-                      }`}
+          className={`flex-1 text-xs font-medium py-1.5 rounded-lg transition-colors
+            ${filter === value
+              ? 'bg-zinc-100 text-zinc-900'
+              : 'text-zinc-400 hover:text-zinc-200'
+            }
+            ${value === 'overdue' && filter !== value ? 'hover:text-red-400' : ''}
+          `}
         >
           {label}
-          {counts[value] !== undefined && (
-            <span
-              className={`text-xs rounded-full px-1.5 py-0.5
-                              ${
-                                active === value
-                                  ? "bg-zinc-900/30 text-zinc-900"
-                                  : "bg-zinc-800 text-zinc-500"
-                              }`}
-            >
-              {counts[value]}
-            </span>
-          )}
         </button>
       ))}
     </div>
   );
-};
-
-export default FilterBar;
+}

@@ -54,7 +54,7 @@ export const signUp = async (req, res, next) => {
       throw new Error("Failed to create user");
     }
 
-    const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ user: savedUser._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || "7d",
     });
 
