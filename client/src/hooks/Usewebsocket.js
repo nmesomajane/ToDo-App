@@ -22,7 +22,7 @@ export function useWebSocket(token, onMessage) {
     if (!token) return;
 
     function connect() {
-      // Don't reconnect if already open
+      
       if (wsRef.current?.readyState === WebSocket.OPEN ||
           wsRef.current?.readyState === WebSocket.CONNECTING) return;
 
