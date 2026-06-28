@@ -7,7 +7,7 @@ import cors from "cors";
 import dotenv from 'dotenv'
 import authRouter from './routes/auth.js';
 import taskRouter from './routes/tasks.js';
-import { initWebSocketServer } from './websocketServer.js';
+import { initWebSocketServer } from './WebsocketServer.js';
 import { startOverdueChecker } from './jobs/overdueChecker.js';
 import logger from './utils/logger.js';
 
