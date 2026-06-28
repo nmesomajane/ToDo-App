@@ -1,5 +1,6 @@
 import Task from "../models/task.js";
 import logger from "../utils/logger.js";
+import { sendToUser } from '../utils/websocket.js';
 import User from '../models/user.js'
 import { sendOverdueEmail, sendCompletedEmail } from '../utils/mailer.js';
 
@@ -119,10 +120,11 @@ export const updateTask = async (req, res) => {
     // Send response FIRST before doing async notifications
     res.json({ task });
         // THEN fire notifications after response is sent
-   if (!wasCompleted && task.completed) {
+  if (!wasCompleted && task.completed) {
   try {
-    const user = await User.findById(req.user._id).select('email');
-    console.log('User email:', user?.email);
+    const user = await User.findById(req.user._id).select('email name');
+    console.log('Found user for notification:', user);
+    console.log('Sending to email:', user?.email);
 
     if (user?.email) {
       sendToUser(String(user._id), {
@@ -131,12 +133,16 @@ export const updateTask = async (req, res) => {
         title: task.title,
         message: `"${task.title}" marked as complete. Nice work!`,
       });
+      console.log('WS notification sent');
 
       await sendCompletedEmail(user.email, task.title);
       console.log('Completion email sent to:', user.email);
+    } else {
+      console.log('No email found for user:', req.user._id);
     }
   } catch (notifErr) {
-    logger.error('Notification error:', notifErr.message); // won't send another response
+    console.log('Notification error full:', notifErr);  
+    logger.error('Notification error:', notifErr);
   }
 }
   } catch (err) {
