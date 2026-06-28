@@ -5,7 +5,6 @@ const axiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach token to every request automatically
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -14,15 +13,13 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-
-
-// If token expires, redirect to login
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+
+      window.dispatchEvent(new Event('auth:logout')); 
     }
     return Promise.reject(error);
   }

@@ -4,8 +4,9 @@ import useAuth from '../context/useAuth';
 const ProtectedRoute = ({ children }) => {
   const { token, loading } = useAuth();
 
-  // Add this temporarily
-  console.log('ProtectedRoute check — token:', token, '| loading:', loading);
+
+    console.log('ProtectedRoute — localStorage token:', localStorage.getItem('token'));
+  console.log('ProtectedRoute — context token:', token);
 
   if (loading) {
     return (

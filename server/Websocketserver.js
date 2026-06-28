@@ -53,10 +53,10 @@ export function initWebSocketServer(httpServer) {
 
     ws.send(JSON.stringify({ type: 'connected', message: 'WebSocket ready' }));
 
-    ws.on('close', () => {
-      removeClient(userId, ws);
-      logger.info(`WS disconnected: user ${userId}`);
-    });
+    ws.on('close', (code, reason) => {
+  removeClient(userId, ws);
+  logger.info(`WS disconnected: user ${userId} | code: ${code} | reason: ${reason.toString()}`);
+});
 
     ws.on('error', (err) => {
       logger.error(`WS error for user ${userId}:`, err.message);
