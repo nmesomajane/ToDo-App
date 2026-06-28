@@ -49,7 +49,7 @@ const { user, token, logout } = useAuth();
         </div>
       </header>
 
-      {/* ── Main ── */}
+   
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         <TaskForm onAdd={refresh} />
 
